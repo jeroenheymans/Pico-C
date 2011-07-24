@@ -76,8 +76,8 @@ typedef enum scan_fun_index { Aop =  0,
                               Smc = 24,
                               Wsp = 25,
                               Sir = 26, /* added */
-                              Exm = 27, /* added */
-                              Qum = 28 } scan_fun_index; /* added */
+                              Exc = 27, /* added */
+                              Que = 28 } scan_fun_index; /* added */
 
 typedef _TKN_TYPE_ scan_fun(_NIL_TYPE_);
 
@@ -121,9 +121,9 @@ static const scan_fun_index scan_char_tab[]
    /*DLE DC1 DC2 DC3 DC4 NAK SYN ETB CAN EM  SUB ESC FS  GS  RS  US */
      Wsp,Wsp,Wsp,Wsp,Wsp,Wsp,Wsp,Wsp,Wsp,Wsp,Wsp,Wsp,Wsp,Wsp,Wsp,Wsp,
    /*     !   "   #   $   %   &   '   (   )   *   +   ,   -   .   / */
-     Wsp,Exm,Quo,Rop,Aop,Aop,Mop,Apo,Lpr,Rpr,Mop,Pls,Com,Mns,Per,Mop,
+     Wsp,Exc,Quo,Rop,Aop,Aop,Mop,Apo,Lpr,Rpr,Mop,Pls,Com,Mns,Per,Mop,
    /* 0   1   2   3   4   5   6   7   8   9   :   ;   <   =   >   ? */
-     Dgt,Dgt,Dgt,Dgt,Dgt,Dgt,Dgt,Dgt,Dgt,Dgt,Col,Smc,Rop,Eql,Rop,Qum,
+     Dgt,Dgt,Dgt,Dgt,Dgt,Dgt,Dgt,Dgt,Dgt,Dgt,Col,Smc,Rop,Eql,Rop,Que,
    /* @   A   B   C   D   E   F   G   H   I   J   K   L   M   N   O */
      Cat,Ltr,Ltr,Ltr,Ltr,Exp,Ltr,Ltr,Ltr,Ltr,Ltr,Ltr,Ltr,Ltr,Ltr,Ltr,
    /* P   Q   R   S   T   U   V   W   X   Y   Z   [   \   ]   ^   _ */
@@ -181,7 +181,7 @@ static scan_fun *scan_fun_tab[] = { scan_Aop,
 
 static const _UNS_TYPE_ operator_mask = (1<<Aop)+(1<<Eql)+(1<<Mns)+
                                         (1<<Mop)+(1<<Pls)+(1<<Rop)+
-                                        (1<<Qum)+(1<<Exm)+(1<<Sir);
+                                        (1<<Que)+(1<<Exc)+(1<<Sir);
 
 static const _UNS_TYPE_     name_mask = (1<<Dgt)+(1<<Exp)+(1<<Ltr);
 
@@ -211,9 +211,9 @@ static const _UNS_TYPE_      wsp_mask = (1<<Eol)+(1<<Wsp);
 
 static const _UNS_TYPE_      col_mask = (1<<Col); /* added */
 
-static const _UNS_TYPE_      exm_mask = (1<<Exm); /* added */
+static const _UNS_TYPE_      exc_mask = (1<<Exc); /* added */
 
-static const _UNS_TYPE_      qum_mask = (1<<Qum); /* added */
+static const _UNS_TYPE_      que_mask = (1<<Que); /* added */
 
 static const _UNS_TYPE_      rpr_mask = (1<<Rpr); /* added */
 
@@ -316,24 +316,24 @@ static _TKN_TYPE_ scan_Col(_NIL_TYPE_)
    if (SCAN_CHECK(equal_mask))
      { SCAN_NEXT_CH();
        return _CEQ_TOKEN_; }
-   else if (SCAN_CHECK(exm_mask)) /* added */
+   else if (SCAN_CHECK(exc_mask)) /* added */
      { SCAN_NEXT_CH();
        if (!SCAN_CHECK(col_mask))
     	   _scan_error_(_ILL_ERROR_);
        SCAN_NEXT_CH();
-       return _PRG_TOKEN_; }
-   else if (SCAN_CHECK(qum_mask))  /* added */
+       return _THA_TOKEN_; }
+   else if (SCAN_CHECK(que_mask))  /* added */
      { SCAN_NEXT_CH();
        if (!SCAN_CHECK(col_mask))
   	       _scan_error_(_ILL_ERROR_);
        SCAN_NEXT_CH();
-       return _PRA_TOKEN_; }
+       return _THQ_TOKEN_; }
    else if (SCAN_CHECK(rpr_mask))  /* added */
      { SCAN_NEXT_CH();
-       return _PRE_TOKEN_; }
+       return _THR_TOKEN_; }
    else if (SCAN_CHECK(rbc_mask))  /* added */
      { SCAN_NEXT_CH();
-       return _SPE_TOKEN_; }
+       return _TSR_TOKEN_; }
    else
      return _COL_TOKEN_; }
   
@@ -352,7 +352,7 @@ static _TKN_TYPE_ scan_Lbc(_NIL_TYPE_)
  { SCAN_NEXT_CH();
    if (SCAN_CHECK(col_mask)) /* added */
      { SCAN_NEXT_CH();
-       return _SPB_TOKEN_; }
+       return _TSL_TOKEN_; }
    return _LBC_TOKEN_; }
   
 static _TKN_TYPE_ scan_Lbr(_NIL_TYPE_)
@@ -363,7 +363,7 @@ static _TKN_TYPE_ scan_Lpr(_NIL_TYPE_)
  { SCAN_NEXT_CH();
    if (SCAN_CHECK(col_mask)) /* added */
      { SCAN_NEXT_CH();
-       return _PRB_TOKEN_; }
+       return _THL_TOKEN_; }
    return _LPR_TOKEN_; }
   
 static _TKN_TYPE_ scan_Ltr(_NIL_TYPE_)

@@ -19,7 +19,6 @@
 #define CAL _eval_CAL_   
 #define EXP _eval_EXP_
 #define NAT _eval_NAT_   
-#define MAI _eval_MAI_ /* added */
 
 /* private prototypes */
 
