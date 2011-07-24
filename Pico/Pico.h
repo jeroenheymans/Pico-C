@@ -98,11 +98,11 @@ typedef enum { _DO_ESCAPE_   = -3,
                _UDI_ERROR_   = 35,
                _USR_ERROR_   = 36,
                _ZDV_ERROR_   = 37,
-               _PRO_ERROR_   = 38,
-               _PRA_ERROR_   = 39,
-               _PRG_ERROR_   = 40,
-               _SPR_ERROR_   = 41,
-               _PRM_ERROR_   = 42 } _RES_TYPE_;
+               _TQA_ERROR_   = 38,
+               _THR_ERROR_   = 39,
+               _TSR_ERROR_   = 40,
+               _THR_ERROR_   = 41,
+               _TNF_ERROR_   = 42 } _RES_TYPE_;
 
 typedef enum { _ESCAPE_NO_   =  0,
                _ESCAPE_YES_  =  1 } _ESC_TYPE_;
