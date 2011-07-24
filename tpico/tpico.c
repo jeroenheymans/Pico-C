@@ -97,11 +97,11 @@ static char * errors[] = {
    "undefined identifier",
    "user error",
    "zero division",
-   "process end expected",
-   "process ask incorrect",
-   "process give incorrect",
-   "sequence process end expected",
-   "maximum processes implemented"
+   "thread answer/request expected",
+   "thread ending parenthesis expected",
+   "thread ending brace expected",
+   "thread expected",
+   "thread not found"
 };
 
 static void show(const char s[], const int on_new_line)
