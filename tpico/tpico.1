@@ -1,0 +1,37 @@
+.TH TPICO "1" "February 2003" "Pico" VUB
+.SH NAME
+tpico \- run the pico interpreter
+.SH SYNOPSIS
+.B tpico
+[ \fIoption\fR | \fIfilename\fR ]...
+.SH DESCRIPTION
+.PP
+.\" Add any additional description here
+.PP
+Run a pico interpreter in text mode.  Can also be used as a filter (best
+with \fI\-b\fR), and even as a network service from inetd.  Uses the
+readline libraries for input editing and history in interactive mode.
+.TP
+\fB\-b\fR
+show no opening banner
+.TP
+\fB\-c\fR
+print a message during garbage collection
+.TP
+\fB\-h\fR
+help
+.TP
+\fB\-i\fR
+no interactive session: only process file arguments
+.TP
+\fB\-s\fR
+ignore #!-line to allow stand-alone executables
+.SH "REPORTING BUGS"
+Report bugs to <dirk@dinf.vub.ac.be>.
+.SH "SEE ALSO"
+More documentation for
+.B pico
+can be found at http://pico.vub.ac.be/.
+.SH COPYRIGHT
+\(co 1997 Theo D'Hondt (interpreter) and
+\(co 2003 Dirk van Deun (front end).

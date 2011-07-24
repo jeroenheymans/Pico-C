@@ -1,0 +1,52 @@
+#! /bin/sh
+
+rm -f configure.opts
+touch configure.opts
+
+echo 'main () {}' > configure.tmp.c
+
+echo "\c" | grep c >/dev/null
+if test $? -eq 0
+then
+  echo_n="-n"
+  echo_c=""
+else
+  echo_n=""
+  echo_c="\c"
+fi
+
+echo $echo_n "Checking for gcc... $echo_c"
+gcc configure.tmp.c 2>/dev/null
+if test $? -eq 0
+then 
+  echo yes
+else
+  echo no
+  echo This package assumes the use of gcc.
+  rm -f configure.tmp.c a.out
+  exit 1
+fi
+
+echo $echo_n "Checking whether gcc recognizes -m32... $echo_c"
+gcc -m32 configure.tmp.c 2>/dev/null
+if test $? -eq 0
+then 
+  echo yes
+  echo -m32 >> configure.opts
+else
+  echo no
+fi
+
+echo $echo_n "Checking whether gcc recognizes -falign-functions... $echo_c"
+gcc -falign-functions=2 configure.tmp.c 2>/dev/null
+if test $? -eq 0
+then 
+  echo yes
+  echo -falign-functions=2 >> configure.opts
+else
+  echo no
+fi
+
+rm -f configure.tmp.c a.out a.exe
+
+exit 0
