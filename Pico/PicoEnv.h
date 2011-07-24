@@ -100,10 +100,6 @@ extern _EXP_TYPE_ _DCT_; /* dictionary containing all the variables */
 extern _UNS_TYPE_ _CNT_; /* continuation */
 extern _UNS_TYPE_ _EXP_; /* expression */
 extern _EXP_TYPE_ _STK_; /* stack */
-extern _EXP_TYPE_ _PRD_; /* PRocess Dictionary */
-extern _EXP_TYPE_ _PRO_; /* PROcesses */
-extern _UNS_TYPE_ _PRC_; /* PRocess Counter */
-extern _UNS_TYPE_ _PRN_; /* PRocess Number */
                            
 /* public prototypes */
 

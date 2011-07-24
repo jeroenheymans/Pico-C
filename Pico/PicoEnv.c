@@ -42,10 +42,6 @@ _EXP_TYPE_ _DCT_;
 _UNS_TYPE_ _CNT_;
 _UNS_TYPE_ _EXP_;
 _EXP_TYPE_ _STK_;
-_EXP_TYPE_ _PRD_; // process dictionary
-_EXP_TYPE_ _PRO_; // processes
-_UNS_TYPE_ _PRC_; // process counter
-_UNS_TYPE_ _PRN_;
                            
 /* public functions */
 
