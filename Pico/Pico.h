@@ -46,16 +46,22 @@
 /*   _UDI_ERROR_  ->  undefined identifier                                */
 /*   _USR_ERROR_  ->  user error                                          */
 /*   _ZDV_ERROR_  ->  zero division                                       */
+/*   _APL_ERROR_  ->  application expected                                */
+/*   _TQA_ERROR_  ->  thread request/answer expected                      */
+/*   _RTP_ERROR_  ->  right thread parentheses expected                   */
+/*   _RTB_ERROR_  ->  right thread brace expected                         */
+/*   _THR_ERROR_  ->  thread expected                                     */
+/*   _TNF_ERROR_  ->  thread not found                                    */
 /*------------------------------------------------------------------------*/
 
 /* public types */
 
-typedef          void   _NIL_TYPE_; /* typical void */
-typedef          void * _ADR_TYPE_; /* address */
-typedef unsigned long   _POS_TYPE_; /* */
-typedef unsigned long   _SES_TYPE_; /* session, every interpreter has it's session */
-typedef unsigned long   _SIZ_TYPE_; /* size */
-typedef          char * _STR_TYPE_; /* string */
+typedef          void   _NIL_TYPE_;
+typedef          void * _ADR_TYPE_;
+typedef unsigned long   _POS_TYPE_;
+typedef unsigned long   _SES_TYPE_;
+typedef unsigned long   _SIZ_TYPE_;
+typedef          char * _STR_TYPE_;
 
 typedef enum { _DO_ESCAPE_   = -3,
                _DO_LOAD_     = -2,
@@ -99,8 +105,8 @@ typedef enum { _DO_ESCAPE_   = -3,
                _USR_ERROR_   = 36,
                _ZDV_ERROR_   = 37,
                _TQA_ERROR_   = 38,
-               _THR_ERROR_   = 39,
-               _TSR_ERROR_   = 40,
+               _RTP_ERROR_   = 39,
+               _RTB_ERROR_   = 40,
                _THR_ERROR_   = 41,
                _TNF_ERROR_   = 42 } _RES_TYPE_;
 

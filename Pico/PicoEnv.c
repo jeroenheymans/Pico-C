@@ -12,7 +12,7 @@
 /*    _stk_poke_CNT_(CNT)    =>   stack[_CNT_tos_] = CNT                  */
 /*    _stk_push_CNT_(CNT)    =>   stack[--_CNT_tos_] = CNT                */
 /*    _stk_peek_CNT_(CNT)    =>   stack[_CNT_tos_]                        */
-/*    _stk_pop_EXP_ (   )    =>   stack[_EXP_tos_++]                      */
+/*    _stk_pop_CNT_ (   )    =>   stack[_CNT_tos_--]                      */
 /*    _stk_zap_CNT_ (   )    =>   _CNT_tos_++                             */
 /*                                                                        */
 /*    _stk_poke_EXP_(EXP)    =>   stack[_EXP_tos_] = EXP                  */
@@ -45,7 +45,6 @@ _EXP_TYPE_ _STK_;
                            
 /* public functions */
 
-/* fill a whole environment (TAB) with void */
 _NIL_TYPE_ _env_setup_(const _SIZ_TYPE_ siz)
  { _SIZ_TYPE_ idx;
    _NAMES_ = _ag_make_TAB_(siz);

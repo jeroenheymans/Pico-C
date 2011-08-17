@@ -46,10 +46,7 @@ _UNS_TYPE_ CHK_RNG(const _UNS_TYPE_,
      
 #define _mem_succ_number_(NBR)\
   _mem_make_nbr_(CHK_NBR(NBR).nbr.nbr + 1)
-
-#define _mem_prev_number_(NBR)\
-  _mem_make_nbr_(CHK_NBR(NBR).nbr.nbr - 1)
-  
+   
 #define _mem_chunk_size_(EXP)\
   (_mem_STORE_[CHK_PTR(EXP).ptr.ofs].hdr.siz)
 

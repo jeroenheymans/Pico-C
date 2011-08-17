@@ -279,7 +279,7 @@ _RES_TYPE_ _PICO_DO_(const _SES_TYPE_ ses,
          _stk_push_EXP_(_VOID_);  
          _stk_push_CNT_(exit_loop);
          _stk_push_CNT_(_print_EXP_);
-         _stk_push_CNT_(_eval_MAI_); /* changed */
+         _stk_push_CNT_(_eval_main_EXP_);
          _stk_push_CNT_(_read_EXP_);
          _ESC_ = SES_TAB[SES_IDX].esc;
          if (setjmp(SES_TAB[SES_IDX].exi) == 0) 
@@ -321,7 +321,7 @@ _RES_TYPE_ _PICO_LOAD_(const _SES_TYPE_ ses,
          _stk_push_EXP_(_ag_make_TXT_(str));         
          _stk_push_EXP_(_VOID_);  
          _stk_push_CNT_(_print_EXP_);
-         _stk_push_CNT_(_eval_EXP_);
+         _stk_push_CNT_(_eval_main_EXP_);
          _stk_push_CNT_(_read_EXP_);
          _ESC_ = SES_TAB[SES_IDX].esc;
          if (setjmp(SES_TAB[SES_IDX].exi) == 0) 

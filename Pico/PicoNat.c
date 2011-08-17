@@ -230,7 +230,7 @@
 
 /* private constants */
 
-#define NATIVE_SIZE 60 /* 60 native functions (is_process added) */
+#define NATIVE_SIZE 61
 
 #define CAL _eval_CAL_
 #define EVL _eval_EXP_
@@ -286,7 +286,8 @@
 #define fun_STR "is_function" 
 #define tbl_STR "is_table" 
 #define vdd_STR "is_void" 
-#define pro_STR "is_process" /* added */
+#define thr_STR "is_thread" 
+#define prc_STR "is_process" 
    /*--TABLE----------*/
 #define siz_STR "size" 
 #define tab_STR "tab" 
@@ -321,10 +322,10 @@
 /* private prototypes */
 
    /*--ARITHMETIC-----*/
-static _NIL_TYPE_ ADD(_NIL_TYPE_); /* + */
-static _NIL_TYPE_ SUB(_NIL_TYPE_); /* - */
-static _NIL_TYPE_ MUL(_NIL_TYPE_); /* * */
-static _NIL_TYPE_ DIV(_NIL_TYPE_); /* / */
+static _NIL_TYPE_ ADD(_NIL_TYPE_);
+static _NIL_TYPE_ SUB(_NIL_TYPE_);
+static _NIL_TYPE_ MUL(_NIL_TYPE_);
+static _NIL_TYPE_ DIV(_NIL_TYPE_);
 static _NIL_TYPE_ IDV(_NIL_TYPE_);
 static _NIL_TYPE_ REM(_NIL_TYPE_);
 static _NIL_TYPE_ POW(_NIL_TYPE_);
@@ -361,8 +362,7 @@ static _NIL_TYPE_ TXT(_NIL_TYPE_);
 static _NIL_TYPE_ FUN(_NIL_TYPE_);
 static _NIL_TYPE_ TBL(_NIL_TYPE_);
 static _NIL_TYPE_ VDD(_NIL_TYPE_);
-static _NIL_TYPE_ PRO(_NIL_TYPE_); /* added */
-static _NIL_TYPE_ PRO1(_NIL_TYPE_); /* added */
+static _NIL_TYPE_ THR(_NIL_TYPE_);
    /*--TABLE----------*/
 static _NIL_TYPE_ SIZ(_NIL_TYPE_);
 static _NIL_TYPE_ TAB(_NIL_TYPE_);
@@ -430,6 +430,7 @@ static _NIL_TYPE_ TXU(_NIL_TYPE_);
 static _NIL_TYPE_ FNU(_NIL_TYPE_);
 static _NIL_TYPE_ TBU(_NIL_TYPE_);
 static _NIL_TYPE_ VDU(_NIL_TYPE_);
+static _NIL_TYPE_ THU(_NIL_TYPE_);
 static _NIL_TYPE_ SZU(_NIL_TYPE_);
 static _NIL_TYPE_ TBX(_NIL_TYPE_);
 static _NIL_TYPE_ DSX(_NIL_TYPE_);
@@ -503,7 +504,8 @@ static const _CNT_TYPE_ FUN_tab[] =
    FUN,
    TBL,
    VDD,
-   PRO, /* added */
+   THR,
+   THR,
    /*--TABLE----------*/
    SIZ,
    TAB,
@@ -577,7 +579,8 @@ static const _STR_TYPE_ STR_tab[] =
    fun_STR,
    tbl_STR, 
    vdd_STR, 
-   pro_STR, /* added */
+   thr_STR, 
+   prc_STR, 
    /*--TABLE----------*/
    siz_STR,  
    tab_STR, 
@@ -2167,16 +2170,16 @@ static _NIL_TYPE_ TBU(_NIL_TYPE_)
  { nat_tag(_TAB_TAG_); }
 
 /*------------------------------------------------------------------------*/
-/*  TBL                                                                   */
+/*  VDD                                                                   */
 /*     expr-stack: [... ... ... ... ... ARG] -> [... ... ... ... ... EVL] */
-/*     cont-stack: [... ... ... ... ... VOI] -> [... ... ... ... VOU EVL] */
+/*     cont-stack: [... ... ... ... ... VOI] -> [... ... ... ... VDU EVL] */
 /*------------------------------------------------------------------------*/
 
 static _NIL_TYPE_ VDD(_NIL_TYPE_)
  { una(VDU, vdd_STR); }
 
 /*------------------------------------------------------------------------*/
-/*  TBU                                                                   */
+/*  VDU                                                                   */
 /*     expr-stack: [... ... ... ... ... VAL] -> [... ... ... ... ... VAL] */
 /*     cont-stack: [... ... ... ... ... VDU] -> [... ... ... ... ... ...] */
 /*------------------------------------------------------------------------*/
@@ -2185,22 +2188,22 @@ static _NIL_TYPE_ VDU(_NIL_TYPE_)
  { nat_tag(_VOI_TAG_); }
 
 /*------------------------------------------------------------------------*/
-/*  TBL                                                                   */
+/*  THR                                                                   */
 /*     expr-stack: [... ... ... ... ... ARG] -> [... ... ... ... ... EVL] */
-/*     cont-stack: [... ... ... ... ... VOI] -> [... ... ... ... VOU EVL] */
+/*     cont-stack: [... ... ... ... ... VOI] -> [... ... ... ... THU EVL] */
 /*------------------------------------------------------------------------*/
 
-static _NIL_TYPE_ PRO(_NIL_TYPE_)
- { una(PRO1, vdd_STR); }
+static _NIL_TYPE_ THR(_NIL_TYPE_)
+ { una(THU, vdd_STR); }
 
 /*------------------------------------------------------------------------*/
-/*  TBU                                                                   */
+/*  THU                                                                   */
 /*     expr-stack: [... ... ... ... ... VAL] -> [... ... ... ... ... VAL] */
-/*     cont-stack: [... ... ... ... ... VDU] -> [... ... ... ... ... ...] */
+/*     cont-stack: [... ... ... ... ... THU] -> [... ... ... ... ... ...] */
 /*------------------------------------------------------------------------*/
 
-static _NIL_TYPE_ PRO1(_NIL_TYPE_)
- { nat_tag(_PRO_TAG_); }
+static _NIL_TYPE_ THU(_NIL_TYPE_)
+ { nat_tag(_TID_TAG_); }
 
 /*------------------------------------------------------------------------*/
 /*------------------------------------------------------------------------*/
@@ -3462,11 +3465,4 @@ _EXP_TYPE_ _nat_install_(_NIL_TYPE_)
    _TAB_   = _env_make_NAM_(tab_STR);     
    _BEGIN_ = _env_make_NAM_(beg_STR);      
    _CONT_  = _env_make_NAM_(cnt_STR);    
-   _PRD_   = _VOID_;
-   _PRO_   = _ag_make_TAB_(_MAX_PRO_);
-   for (ctr = 1; ctr <= _MAX_PRO_; ctr++)
-	 _ag_set_TAB_EXP_(_PRO_, ctr, _VOID_);
-   _ag_set_TAB_EXP_(_PRO_, 1, _ag_make_PRO_());
-   _PRC_   = 1;
-   _PRN_   = 1;
    return dct; }

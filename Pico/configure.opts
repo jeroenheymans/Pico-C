@@ -1,1 +1,2 @@
--m32 -falign-functions=2
+-m32
+-falign-functions=2

@@ -28,9 +28,8 @@
 #define DCT_TEXT "<dictionary>"
 #define ENV_TEXT "<environment>"
 #define NYI_TEXT "<not yet implemented>"
-#define PRO_TEXT "<process>" 		/* added */
-#define PRA_TEXT "<process ask>"	/* added */
-#define PRG_TEXT "<process give>" 	/* added */
+#define THA_TEXT "<thread answer>"
+#define THQ_TEXT "<thread request>"
 
 #define EXP _print_EXP_ 
 
@@ -49,12 +48,12 @@ static _NIL_TYPE_ SET(_NIL_TYPE_);
 static _NIL_TYPE_ TAB(_NIL_TYPE_);
 static _NIL_TYPE_ TAb(_NIL_TYPE_);
 static _NIL_TYPE_ TBL(_NIL_TYPE_);
+static _NIL_TYPE_ THA(_NIL_TYPE_);
+static _NIL_TYPE_ THQ(_NIL_TYPE_);
+static _NIL_TYPE_ TID(_NIL_TYPE_);
 static _NIL_TYPE_ TXT(_NIL_TYPE_);
 static _NIL_TYPE_ VAR(_NIL_TYPE_);
 static _NIL_TYPE_ VOI(_NIL_TYPE_);
-static _NIL_TYPE_ PRO(_NIL_TYPE_); /* added */
-static _NIL_TYPE_ PRA(_NIL_TYPE_); /* added */
-static _NIL_TYPE_ PRG(_NIL_TYPE_); /* added */
 
 /* private variables */
 
@@ -72,10 +71,14 @@ static const _CNT_TYPE_ CNT_tab[] =
      SET,
      DCT,
      ENV,
-     PRO, /* added */
-     PRA, /* added */
-     PRG, /* added */
-     NBR }; 
+     NYI,
+     NYI,
+     NYI, 
+     NBR, 
+     THA, 
+     THQ, 
+     NYI,
+     TID }; 
 
 /* private functions */
 
@@ -182,36 +185,6 @@ static _NIL_TYPE_ NYI(_NIL_TYPE_)
    _print_(NYI_TEXT); }
    
 /*------------------------------------------------------------------------*/
-/*  PRA                                                                   */
-/*     expr-stack: [... ... ... ... ... PRA] -> [... ... ... ... ... EOL] */
-/*     cont-stack: [... ... ... ... ... PRA] -> [... ... ... ... ... ...] */
-/*------------------------------------------------------------------------*/   
-static _NIL_TYPE_ PRA(_NIL_TYPE_)
- { _stk_poke_EXP_(_EOLN_);
-   _stk_zap_CNT_();
-   _print_(PRA_TEXT); }
-
-/*------------------------------------------------------------------------*/
-/*  PRG                                                                   */
-/*     expr-stack: [... ... ... ... ... PRG] -> [... ... ... ... ... EOL] */
-/*     cont-stack: [... ... ... ... ... PRG] -> [... ... ... ... ... ...] */
-/*------------------------------------------------------------------------*/   
-static _NIL_TYPE_ PRG(_NIL_TYPE_)
- { _stk_poke_EXP_(_EOLN_);
-   _stk_zap_CNT_();
-   _print_(PRG_TEXT); }
-   
-/*------------------------------------------------------------------------*/
-/*  PRO                                                                   */
-/*     expr-stack: [... ... ... ... ... PRO] -> [... ... ... ... ... EOL] */
-/*     cont-stack: [... ... ... ... ... PRO] -> [... ... ... ... ... ...] */
-/*------------------------------------------------------------------------*/
-static _NIL_TYPE_ PRO(_NIL_TYPE_)
- { _stk_poke_EXP_(_EOLN_);
-   _stk_zap_CNT_();
-   _print_(PRO_TEXT); }
-   
-/*------------------------------------------------------------------------*/
 /*  SET                                                                   */
 /*     expr-stack: [... ... ... ... ... SET] -> [... ... ... ... ... EOL] */
 /*     cont-stack: [... ... ... ... ... SET] -> [... ... ... ... ... ...] */
@@ -308,6 +281,42 @@ static _NIL_TYPE_ TAb(_NIL_TYPE_)
      { _stk_poke_EXP_(_EOLN_);
        _stk_zap_CNT_(); 
        _print_("]"); }}
+
+/*------------------------------------------------------------------------*/
+/*  THA                                                                   */
+/*     expr-stack: [... ... ... ... ... THA] -> [... ... ... ... ... EOL] */
+/*     cont-stack: [... ... ... ... ... THA] -> [... ... ... ... ... ...] */
+/*------------------------------------------------------------------------*/
+static _NIL_TYPE_ THA(_NIL_TYPE_)
+ { _stk_poke_EXP_(_EOLN_);
+   _stk_zap_CNT_();
+   _print_(THA_TEXT); }
+
+/*------------------------------------------------------------------------*/
+/*  THQ                                                                   */
+/*     expr-stack: [... ... ... ... ... THQ] -> [... ... ... ... ... EOL] */
+/*     cont-stack: [... ... ... ... ... THQ] -> [... ... ... ... ... ...] */
+/*------------------------------------------------------------------------*/
+static _NIL_TYPE_ THQ(_NIL_TYPE_)
+ { _stk_poke_EXP_(_EOLN_);
+   _stk_zap_CNT_();
+   _print_(THQ_TEXT); }
+
+/*------------------------------------------------------------------------*/
+/*  TID (thread id)                                                       */
+/*     expr-stack: [... ... ... ... ... TID] -> [... ... ... ... ... EOL] */
+/*     cont-stack: [... ... ... ... ... TID] -> [... ... ... ... ... ...] */
+/*------------------------------------------------------------------------*/
+static _NIL_TYPE_ TID(_NIL_TYPE_)
+ { _stk_zap_CNT_();
+   _EXP_TYPE_ tid, num;
+   _UNS_TYPE_ val;
+   _stk_peek_EXP_(tid);
+   _stk_poke_EXP_(_EOLN_);
+   num = _ag_get_TID_IDF_(tid);
+   val = _ag_get_NBU_(num);
+   sprintf(_TEXT_BUF_, "<thread %d>", val);
+   _print_(_TEXT_BUF_); }
 
 /*------------------------------------------------------------------------*/
 /*  VAR                                                                   */

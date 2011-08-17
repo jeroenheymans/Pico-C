@@ -47,6 +47,9 @@
 #define SCAN_NEXT_CH()\
   (scan_ch = scan_text[scan_stop]) ? scan_stop++ : 0
 
+#define SCAN_PREV_CH()\
+  scan_ch = scan_text[--scan_stop]
+
 /* private types */
 
 typedef enum scan_fun_index { Aop =  0,
@@ -75,9 +78,9 @@ typedef enum scan_fun_index { Aop =  0,
                               Rpr = 23,
                               Smc = 24,
                               Wsp = 25,
-                              Sir = 26, /* added */
-                              Exc = 27, /* added */
-                              Que = 28 } scan_fun_index; /* added */
+                              Xop = 26,
+                              Exc = 27,
+                              Que = 28 } scan_fun_index;
 
 typedef _TKN_TYPE_ scan_fun(_NIL_TYPE_);
 
@@ -114,7 +117,6 @@ static _POS_TYPE_ scan_index = 0;
 static _POS_TYPE_ scan_start = 0;
 static _POS_TYPE_ scan_stop  = 0;
 
-/* changed xop into qum, exm and sir */
 static const scan_fun_index scan_char_tab[]  
    /*NUL SOH STX ETX EOT ENQ ACK BEL BS  HT  LF  VT  FF  CR  SO  SI */
   = {Wsp,Wsp,Wsp,Wsp,Wsp,Wsp,Wsp,Wsp,Wsp,Wsp,Wsp,Wsp,Wsp,Eol,Wsp,Wsp,
@@ -127,7 +129,7 @@ static const scan_fun_index scan_char_tab[]
    /* @   A   B   C   D   E   F   G   H   I   J   K   L   M   N   O */
      Cat,Ltr,Ltr,Ltr,Ltr,Exp,Ltr,Ltr,Ltr,Ltr,Ltr,Ltr,Ltr,Ltr,Ltr,Ltr,
    /* P   Q   R   S   T   U   V   W   X   Y   Z   [   \   ]   ^   _ */
-     Ltr,Ltr,Ltr,Ltr,Ltr,Ltr,Ltr,Ltr,Ltr,Ltr,Ltr,Lbr,Mop,Rbr,Sir,Ltr,
+     Ltr,Ltr,Ltr,Ltr,Ltr,Ltr,Ltr,Ltr,Ltr,Ltr,Ltr,Lbr,Mop,Rbr,Xop,Ltr,
    /* `   a   b   c   d   e   f   g   h   i   j   k   l   m   n   o */
      Bkq,Ltr,Ltr,Ltr,Ltr,Exp,Ltr,Ltr,Ltr,Ltr,Ltr,Ltr,Ltr,Ltr,Ltr,Ltr,
    /* p   q   r   s   t   u   v   w   x   y   z   {   |   }   ~  DEL*/
@@ -176,12 +178,11 @@ static scan_fun *scan_fun_tab[] = { scan_Aop,
 			                              scan_Smc,
 			                              scan_Wsp,
 			                              scan_Xop,
-			                              scan_Xop,   /* added */
-			                              scan_Xop }; /* added */
+			                              scan_Xop,
+			                              scan_Xop };
 
-static const _UNS_TYPE_ operator_mask = (1<<Aop)+(1<<Eql)+(1<<Mns)+
-                                        (1<<Mop)+(1<<Pls)+(1<<Rop)+
-                                        (1<<Que)+(1<<Exc)+(1<<Sir);
+static const _UNS_TYPE_ operator_mask = (1<<Aop)+(1<<Eql)+(1<<Mns)+(1<<Mop)+
+                                        (1<<Pls)+(1<<Rop)+(1<<Xop)+(1<<Exc)+(1<<Que);
 
 static const _UNS_TYPE_     name_mask = (1<<Dgt)+(1<<Exp)+(1<<Ltr);
 
@@ -209,15 +210,15 @@ static const _UNS_TYPE_    equal_mask = (1<<Eql);
 
 static const _UNS_TYPE_      wsp_mask = (1<<Eol)+(1<<Wsp);
 
-static const _UNS_TYPE_      col_mask = (1<<Col); /* added */
+static const _UNS_TYPE_      que_mask = (1<<Que);
 
-static const _UNS_TYPE_      exc_mask = (1<<Exc); /* added */
+static const _UNS_TYPE_      exc_mask = (1<<Exc);
 
-static const _UNS_TYPE_      que_mask = (1<<Que); /* added */
+static const _UNS_TYPE_      rbc_mask = (1<<Rbc);
 
-static const _UNS_TYPE_      rpr_mask = (1<<Rpr); /* added */
+static const _UNS_TYPE_      rpr_mask = (1<<Rpr);
 
-static const _UNS_TYPE_      rbc_mask = (1<<Rbc); /* added */
+static const _UNS_TYPE_      col_mask = (1<<Col);
 
 /* private functions */
 
@@ -233,13 +234,13 @@ static _NIL_TYPE_ scan_terminate_text(_NIL_TYPE_)
    scan_index = 0; }
 
 static _NIL_TYPE_ scan_operator(_NIL_TYPE_) 
- { do
+ { do 
      scan_store_next_ch();
    while (SCAN_CHECK(operator_mask));
    scan_terminate_text(); }
   
 static _NIL_TYPE_ scan_name(_NIL_TYPE_)
- { do
+ { do 
      scan_store_next_ch();
    while (SCAN_CHECK(name_mask));
    scan_terminate_text(); }
@@ -272,7 +273,7 @@ static _TKN_TYPE_ scan_fraction(_NIL_TYPE_)
        return _FRC_TOKEN_; }}
 
 static _TKN_TYPE_ scan_number(_NIL_TYPE_)
- { do
+ { do 
      scan_store_next_ch();
    while (SCAN_CHECK(digit_mask));
    if (SCAN_CHECK(period_mask))
@@ -308,7 +309,7 @@ static _TKN_TYPE_ scan_Bkq(_NIL_TYPE_)
    return _scan_(); }
   
 static _TKN_TYPE_ scan_Cat(_NIL_TYPE_)
- { SCAN_NEXT_CH();
+ { SCAN_NEXT_CH(); 
    return _CAT_TOKEN_; }
   
 static _TKN_TYPE_ scan_Col(_NIL_TYPE_) 
@@ -316,26 +317,29 @@ static _TKN_TYPE_ scan_Col(_NIL_TYPE_)
    if (SCAN_CHECK(equal_mask))
      { SCAN_NEXT_CH();
        return _CEQ_TOKEN_; }
-   else if (SCAN_CHECK(exc_mask)) /* added */
+   else if (SCAN_CHECK(rbc_mask))
      { SCAN_NEXT_CH();
-       if (!SCAN_CHECK(col_mask))
-    	   _scan_error_(_ILL_ERROR_);
-       SCAN_NEXT_CH();
-       return _THA_TOKEN_; }
-   else if (SCAN_CHECK(que_mask))  /* added */
+       return _RTS_TOKEN_; }
+   else if (SCAN_CHECK(rpr_mask))
      { SCAN_NEXT_CH();
-       if (!SCAN_CHECK(col_mask))
-  	       _scan_error_(_ILL_ERROR_);
-       SCAN_NEXT_CH();
-       return _THQ_TOKEN_; }
-   else if (SCAN_CHECK(rpr_mask))  /* added */
+       return _RTH_TOKEN_; }
+   else if (SCAN_CHECK(que_mask))
      { SCAN_NEXT_CH();
-       return _THR_TOKEN_; }
-   else if (SCAN_CHECK(rbc_mask))  /* added */
+       if (SCAN_CHECK(col_mask))
+         { SCAN_NEXT_CH();
+           return _THQ_TOKEN_; }
+       else
+         { SCAN_PREV_CH();
+           return _COL_TOKEN_; }}
+   else if (SCAN_CHECK(exc_mask))
      { SCAN_NEXT_CH();
-       return _TSR_TOKEN_; }
-   else
-     return _COL_TOKEN_; }
+       if (SCAN_CHECK(col_mask))
+         { SCAN_NEXT_CH();
+           return _THA_TOKEN_; }
+       else
+         { SCAN_PREV_CH();
+           return _COL_TOKEN_; }}
+   return _COL_TOKEN_; }
   
 static _TKN_TYPE_ scan_Com(_NIL_TYPE_) 
  { SCAN_NEXT_CH();
@@ -345,25 +349,25 @@ static _TKN_TYPE_ scan_Dgt(_NIL_TYPE_)
  { return scan_number(); }
 
 static _TKN_TYPE_ scan_Ill(_NIL_TYPE_)
- { _scan_error_(_ILL_ERROR_);
+ { _scan_error_(_ILL_ERROR_); 
    return _END_TOKEN_; }
   
 static _TKN_TYPE_ scan_Lbc(_NIL_TYPE_)
- { SCAN_NEXT_CH();
-   if (SCAN_CHECK(col_mask)) /* added */
+ { SCAN_NEXT_CH(); 
+   if (SCAN_CHECK(col_mask))
      { SCAN_NEXT_CH();
-       return _TSL_TOKEN_; }
+       return _LTS_TOKEN_; }
    return _LBC_TOKEN_; }
   
 static _TKN_TYPE_ scan_Lbr(_NIL_TYPE_)
- { SCAN_NEXT_CH();
+ { SCAN_NEXT_CH(); 
    return _LBR_TOKEN_; }
   
 static _TKN_TYPE_ scan_Lpr(_NIL_TYPE_)
  { SCAN_NEXT_CH();
-   if (SCAN_CHECK(col_mask)) /* added */
+   if (SCAN_CHECK(col_mask))
      { SCAN_NEXT_CH();
-       return _THL_TOKEN_; }
+       return _LTH_TOKEN_; }
    return _LPR_TOKEN_; }
   
 static _TKN_TYPE_ scan_Ltr(_NIL_TYPE_)
@@ -386,11 +390,11 @@ static _TKN_TYPE_ scan_Quo(_NIL_TYPE_)
    return _TXT_TOKEN_; }
   
 static _TKN_TYPE_ scan_Rbc(_NIL_TYPE_)
- { SCAN_NEXT_CH();
+ { SCAN_NEXT_CH(); 
    return _RBC_TOKEN_; }
     
 static _TKN_TYPE_ scan_Rbr(_NIL_TYPE_)
- { SCAN_NEXT_CH();
+ { SCAN_NEXT_CH(); 
    return _RBR_TOKEN_; }
     
 static _TKN_TYPE_ scan_Rop(_NIL_TYPE_)
@@ -398,15 +402,15 @@ static _TKN_TYPE_ scan_Rop(_NIL_TYPE_)
    return _ROP_TOKEN_; }
   
 static _TKN_TYPE_ scan_Rpr(_NIL_TYPE_)
- { SCAN_NEXT_CH();
+ { SCAN_NEXT_CH(); 
    return _RPR_TOKEN_; }
   
 static _TKN_TYPE_ scan_Smc(_NIL_TYPE_) 
- { SCAN_NEXT_CH();
+ { SCAN_NEXT_CH(); 
    return _SMC_TOKEN_; }
   
 static _TKN_TYPE_ scan_Wsp(_NIL_TYPE_)
- { do
+ { do 
      SCAN_NEXT_CH();
    while (SCAN_CHECK(wsp_mask));
    if (scan_ch) 

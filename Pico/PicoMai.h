@@ -9,6 +9,7 @@
 
 #define NDEBUG
 
+#include <string.h> // for strlen
 #include <float.h>
 #include <limits.h>
 #include <setjmp.h>
@@ -46,18 +47,22 @@
 #define ENV_TOP_INDEX 3
 #define ENV_TAB_INDEX 4
 
-/* added */
-#define PRO_EXP_INDEX 1
-#define PRO_ENV_INDEX 2
-#define PRO_NAM_INDEX 3
+#define THA_INV_INDEX 1
+#define THA_NAM_INDEX 2
+#define THA_ARG_INDEX 3
 
-/* added */
-#define PRA_NAM_INDEX 1
-#define PRA_APL_INDEX 2
+#define THQ_NAM_INDEX 1
+#define THQ_INV_INDEX 2
+#define THQ_ARG_INDEX 3
 
-/* added */
-#define PRG_NAM_INDEX 1
-#define PRG_APL_INDEX 2
+#define THR_IDF_INDEX 1
+#define THR_EXP_INDEX 2
+#define THR_ENV_INDEX 3
+
+#define TID_IDF_INDEX 1
+
+#define SCH_THR_INDEX 1
+#define SCH_SCH_INDEX 2
 
 /* public constants */
 
@@ -78,7 +83,6 @@
 #define _STK_FRACT_   0.05
 #define _NAM_FRACT_   0.05
 #define _BUF_SIZE_    32768
-#define _MAX_PRO_     10	/* added, maximum number of processes */
 
 #define _VOI_SIZE_    0
 #define _NAT_SIZE_    2
@@ -90,9 +94,11 @@
 #define _SET_SIZE_    2
 #define _DCT_SIZE_    3
 #define _ENV_SIZE_    4
-#define _PRO_SIZE_    2 /* added */
-#define _PRA_SIZE_    2 /* added */
-#define _PRG_SIZE_    2 /* added */
+#define _THA_SIZE_    3
+#define _THQ_SIZE_    3
+#define _THR_SIZE_    3
+#define _TID_SIZE_    1
+#define _SCH_SIZE_    2
 
 /* private macros */
 
@@ -111,7 +117,7 @@
   _mem_make_nbr_(SGN)                            
                                
 #define _ag_make_NBU_(UNS)\
-  _mem_make_nbu_(UNS)                            
+  _mem_make_nbu_(UNS)    
                                
 #define _ag_make_FRC_(FLP)\
   _mem_fill_raw_(_FRC_SIZE_, _FRC_TAG_, (void *)FLP)
@@ -147,16 +153,22 @@
   _mem_make_chunk_(_DCT_SIZE_, _DCT_TAG_)       
 
 #define _ag_make_ENV_()\
-  _mem_make_chunk_(_ENV_SIZE_, _ENV_TAG_)
+  _mem_make_chunk_(_ENV_SIZE_, _ENV_TAG_)      
 
-#define _ag_make_PRO_()\
-  _mem_make_chunk_(_PRO_SIZE_, _PRO_TAG_) /* added */
+#define _ag_make_THA_()\
+  _mem_make_chunk_(_THA_SIZE_, _THA_TAG_)    
 
-#define _ag_make_PRA_()\
-  _mem_make_chunk_(_PRA_SIZE_, _PRA_TAG_) /* added */
+#define _ag_make_THQ_()\
+  _mem_make_chunk_(_THQ_SIZE_, _THQ_TAG_)       
 
-#define _ag_make_PRG_()\
-  _mem_make_chunk_(_PRG_SIZE_, _PRG_TAG_) /* added */
+#define _ag_make_THR_()\
+  _mem_make_chunk_(_THR_SIZE_, _THR_TAG_)    
+
+#define _ag_make_TID_()\
+  _mem_make_chunk_(_TID_SIZE_, _TID_TAG_)
+
+#define _ag_make_SCH_()\
+  _mem_make_chunk_(_SCH_SIZE_, _SCH_TAG_)
 
 #define _ag_get_TAG_(AGR)\
  ((_mem_is_number_(AGR))\
@@ -249,32 +261,44 @@
 #define _ag_get_ENV_TAB_(ENV)\
  _mem_get_exp_(CHK_AGR(ENV, _ENV_TAG_), ENV_TAB_INDEX)
 
-#define _ag_get_PRO_EXP_(PRO)\
- _mem_get_exp_(CHK_AGR(PRO, _PRO_TAG_), PRO_EXP_INDEX) /* added */
+#define _ag_get_THA_INV_(THA)\
+ _mem_get_exp_(CHK_AGR(THA, _THA_TAG_), THA_INV_INDEX)
 
-#define _ag_get_PRO_ENV_(PRO)\
- _mem_get_exp_(CHK_AGR(PRO, _PRO_TAG_), PRO_ENV_INDEX) /* added */
+#define _ag_get_THA_NAM_(THA)\
+ _mem_get_exp_(CHK_AGR(THA, _THA_TAG_), THA_NAM_INDEX)
 
-#define _ag_get_PRO_NAM_(PRO)\
- _mem_get_exp_(CHK_AGR(PRO, _PRO_TAG_), PRO_NAM_INDEX) /* added */
+#define _ag_get_THA_ARG_(THA)\
+ _mem_get_exp_(CHK_AGR(THA, _THA_TAG_), THA_ARG_INDEX)
 
-#define _ag_get_PRA_NAM_(PRA)\
- _mem_get_exp_(CHK_AGR(PRA, _PRA_TAG_), PRA_NAM_INDEX) /* added */
+#define _ag_get_THQ_INV_(THQ)\
+ _mem_get_exp_(CHK_AGR(THQ, _THQ_TAG_), THQ_INV_INDEX)
 
-#define _ag_get_PRA_APL_(PRA)\
- _mem_get_exp_(CHK_AGR(PRA, _PRA_TAG_), PRA_APL_INDEX) /* added */
+#define _ag_get_THQ_NAM_(THQ)\
+ _mem_get_exp_(CHK_AGR(THQ, _THQ_TAG_), THQ_NAM_INDEX)
 
-#define _ag_get_PRG_NAM_(PRG)\
- _mem_get_exp_(CHK_AGR(PRG, _PRG_TAG_), PRG_NAM_INDEX) /* added */
+#define _ag_get_THQ_ARG_(THQ)\
+ _mem_get_exp_(CHK_AGR(THQ, _THQ_TAG_), THQ_ARG_INDEX)
 
-#define _ag_get_PRG_APL_(PRG)\
- _mem_get_exp_(CHK_AGR(PRG, _PRG_TAG_), PRG_APL_INDEX) /* added */
+#define _ag_get_THR_IDF_(THR)\
+ _mem_get_exp_(CHK_AGR(THR, _THR_TAG_), THR_IDF_INDEX)
+
+#define _ag_get_THR_EXP_(THR)\
+ _mem_get_exp_(CHK_AGR(THR, _THR_TAG_), THR_EXP_INDEX)
+
+#define _ag_get_THR_ENV_(THR)\
+ _mem_get_exp_(CHK_AGR(THR, _THR_TAG_), THR_ENV_INDEX)
+
+#define _ag_get_TID_IDF_(TID)\
+ _mem_get_exp_(CHK_AGR(TID, _TID_TAG_), TID_IDF_INDEX)
+
+#define _ag_get_SCH_THR_(SCH)\
+ _mem_get_exp_(CHK_AGR(SCH, _SCH_TAG_), SCH_THR_INDEX)
+
+#define _ag_get_SCH_SCH_(SCH)\
+ _mem_get_exp_(CHK_AGR(SCH, _SCH_TAG_), SCH_SCH_INDEX)
 
 #define _ag_succ_NBR_(NBR)\
-  _mem_succ_number_(NBR)
-
-#define _ag_prev_NBR_(NBR)\
-  _mem_prev_number_(NBR)
+  _mem_succ_number_(NBR)                            
                                
 #define _ag_set_NAT_NAM_(NAT, NAM)\
  _mem_set_exp_(CHK_AGR(NAT, _NAT_TAG_), NAT_NAM_INDEX, NAM)
@@ -348,27 +372,42 @@
 #define _ag_set_ENV_TAB_(ENV, TAB)\
  _mem_set_exp_(CHK_AGR(ENV, _ENV_TAG_), ENV_TAB_INDEX, TAB)
 
-#define _ag_set_PRO_EXP_(PRO, EXP)\
- _mem_set_exp_(CHK_AGR(PRO, _PRO_TAG_), PRO_EXP_INDEX, EXP) /* added */
+#define _ag_set_THA_INV_(THA, INV)\
+ _mem_set_exp_(CHK_AGR(THA, _THA_TAG_), THA_INV_INDEX, INV)
 
-#define _ag_set_PRO_ENV_(PRO, ENV)\
- _mem_set_exp_(CHK_AGR(PRO, _PRO_TAG_), PRO_ENV_INDEX, ENV) /* added */
+#define _ag_set_THA_NAM_(THA, NAM)\
+ _mem_set_exp_(CHK_AGR(THA, _THA_TAG_), THA_NAM_INDEX, NAM)
 
-#define _ag_set_PRO_NAM_(PRO, NAM)\
- _mem_set_exp_(CHK_AGR(PRO, _PRO_TAG_), PRO_NAM_INDEX, NAM) /* added */
- 
-#define _ag_set_PRA_NAM_(PRA, NAM)\
- _mem_set_exp_(CHK_AGR(PRA, _PRA_TAG_), PRA_NAM_INDEX, NAM) /* added */
+#define _ag_set_THA_ARG_(THA, ARG)\
+ _mem_set_exp_(CHK_AGR(THA, _THA_TAG_), THA_ARG_INDEX, ARG)
 
-#define _ag_set_PRA_APL_(PRA, APL)\
- _mem_set_exp_(CHK_AGR(PRA, _PRA_TAG_), PRA_APL_INDEX, APL) /* added */
+#define _ag_set_THQ_INV_(THQ, INV)\
+ _mem_set_exp_(CHK_AGR(THQ, _THQ_TAG_), THQ_INV_INDEX, INV)
 
-#define _ag_set_PRG_NAM_(PRG, NAM)\
- _mem_set_exp_(CHK_AGR(PRG, _PRG_TAG_), PRG_NAM_INDEX, NAM) /* added */
+#define _ag_set_THQ_NAM_(THQ, NAM)\
+ _mem_set_exp_(CHK_AGR(THQ, _THQ_TAG_), THQ_NAM_INDEX, NAM)
 
-#define _ag_set_PRG_APL_(PRG, APL)\
- _mem_set_exp_(CHK_AGR(PRG, _PRG_TAG_), PRG_APL_INDEX, APL) /* added */
- 
+#define _ag_set_THQ_ARG_(THQ, ARG)\
+ _mem_set_exp_(CHK_AGR(THQ, _THQ_TAG_), THQ_ARG_INDEX, ARG)
+
+#define _ag_set_THR_IDF_(THR, IDF)\
+ _mem_set_exp_(CHK_AGR(THR, _THR_TAG_), THR_IDF_INDEX, IDF)
+
+#define _ag_set_THR_EXP_(THR, EXP)\
+ _mem_set_exp_(CHK_AGR(THR, _THR_TAG_), THR_EXP_INDEX, EXP)
+
+#define _ag_set_THR_ENV_(THR, ENV)\
+ _mem_set_exp_(CHK_AGR(THR, _THR_TAG_), THR_ENV_INDEX, ENV)
+
+#define _ag_set_TID_IDF_(TID, IDF)\
+ _mem_set_exp_(CHK_AGR(TID, _TID_TAG_), TID_IDF_INDEX, IDF)
+
+#define _ag_set_SCH_THR_(SCH, THR)\
+ _mem_set_exp_(CHK_AGR(SCH, _SCH_TAG_), SCH_THR_INDEX, THR)
+
+#define _ag_set_SCH_SCH_(SCH, SCX)\
+ _mem_set_exp_(CHK_AGR(SCH, _SCH_TAG_), SCH_SCH_INDEX, SCX)
+
 #define _ag_is_VOI_(VOI)\
  (_mem_get_tag_(VOI) == _VOI_TAG_)
  
@@ -378,11 +417,11 @@
 /* public types */
 
 typedef unsigned int      _UNS_TYPE_;
-typedef   signed int      _SGN_TYPE_;
-typedef          double   _FLO_TYPE_;
-typedef          double * _FLP_TYPE_;
+typedef   signed int      _SGN_TYPE_; 
+typedef          double   _FLO_TYPE_;                    
+typedef          double * _FLP_TYPE_;     
 typedef unsigned char     _BYT_TYPE_;
-typedef unsigned char     _CHA_TYPE_;
+typedef unsigned char     _CHA_TYPE_;  
 typedef          jmp_buf  _EXI_TYPE_;
 
 typedef enum { _VOI_TAG_ = 0 ,
@@ -398,10 +437,15 @@ typedef enum { _VOI_TAG_ = 0 ,
                _SET_TAG_ = 10,
                _DCT_TAG_ = 11,
                _ENV_TAG_ = 12,
-               _PRO_TAG_ = 13, /* added */
-               _PRA_TAG_ = 14, /* added */
-               _PRG_TAG_ = 15, /* added */
-               _NBR_TAG_ = 16 } _TAG_TYPE_;
+               _NY1_TAG_ = 13,
+               _NY2_TAG_ = 14,
+               _NY3_TAG_ = 15,
+               _NBR_TAG_ = 16,
+               _THA_TAG_ = 17,
+               _THQ_TAG_ = 18,
+               _THR_TAG_ = 19,
+               _TID_TAG_ = 20 ,
+               _SCH_TAG_ = 21 } _TAG_TYPE_;
 
 typedef          char     _BUF_TYPE_[_BUF_SIZE_];
 
@@ -413,8 +457,8 @@ typedef _SGN_TYPE_ (*_STR_COMP_)(const _STR_TYPE_,
                                  const _STR_TYPE_);
 typedef _NIL_TYPE_ (*_CNT_TYPE_)(      _NIL_TYPE_);
 
-typedef struct { _UNS_TYPE_ siz: 24;
-                 _UNS_TYPE_ tag:  4;
+typedef struct { _UNS_TYPE_ siz: 23;
+                 _UNS_TYPE_ tag:  5;
                  _UNS_TYPE_ raw:  1;
                  _UNS_TYPE_ hdr:  1;
                  _UNS_TYPE_ bsy:  1;

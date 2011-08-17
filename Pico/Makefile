@@ -1,5 +1,5 @@
 all: PicoMai.o PicoMem.o PicoNat.o PicoPri.o PicoEva.o PicoRea.o \
- PicoSca.o PicoEnv.o
+ PicoSca.o PicoEnv.o PicoSch.o
 
 configure.opts:
 	./configure
@@ -42,3 +42,6 @@ PicoRea.o: PicoRea.c Pico.h PicoMai.h PicoMem.h PicoEnv.h PicoNat.h \
 
 PicoSca.o: PicoSca.c Pico.h PicoMai.h PicoSca.h configure.opts
 	gcc -O3 `cat configure.opts` -c PicoSca.c
+
+PicoSch.o: PicoSch.c Pico.h PicoMai.h PicoMem.h PicoSch.h configure.opts
+	gcc -O3 `cat configure.opts` -c PicoSch.c
