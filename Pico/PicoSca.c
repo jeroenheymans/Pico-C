@@ -78,7 +78,7 @@ typedef enum scan_fun_index { Aop =  0,
                               Rpr = 23,
                               Smc = 24,
                               Wsp = 25,
-                              Xop = 26,
+                              Pow = 26,
                               Exc = 27,
                               Que = 28 } scan_fun_index;
 
@@ -129,7 +129,7 @@ static const scan_fun_index scan_char_tab[]
    /* @   A   B   C   D   E   F   G   H   I   J   K   L   M   N   O */
      Cat,Ltr,Ltr,Ltr,Ltr,Exp,Ltr,Ltr,Ltr,Ltr,Ltr,Ltr,Ltr,Ltr,Ltr,Ltr,
    /* P   Q   R   S   T   U   V   W   X   Y   Z   [   \   ]   ^   _ */
-     Ltr,Ltr,Ltr,Ltr,Ltr,Ltr,Ltr,Ltr,Ltr,Ltr,Ltr,Lbr,Mop,Rbr,Xop,Ltr,
+     Ltr,Ltr,Ltr,Ltr,Ltr,Ltr,Ltr,Ltr,Ltr,Ltr,Ltr,Lbr,Mop,Rbr,Pow,Ltr,
    /* `   a   b   c   d   e   f   g   h   i   j   k   l   m   n   o */
      Bkq,Ltr,Ltr,Ltr,Ltr,Exp,Ltr,Ltr,Ltr,Ltr,Ltr,Ltr,Ltr,Ltr,Ltr,Ltr,
    /* p   q   r   s   t   u   v   w   x   y   z   {   |   }   ~  DEL*/
@@ -182,7 +182,7 @@ static scan_fun *scan_fun_tab[] = { scan_Aop,
 			                              scan_Xop };
 
 static const _UNS_TYPE_ operator_mask = (1<<Aop)+(1<<Eql)+(1<<Mns)+(1<<Mop)+
-                                        (1<<Pls)+(1<<Rop)+(1<<Xop)+(1<<Exc)+(1<<Que);
+                                        (1<<Pls)+(1<<Rop)+(1<<Pow)+(1<<Exc)+(1<<Que);
 
 static const _UNS_TYPE_     name_mask = (1<<Dgt)+(1<<Exp)+(1<<Ltr);
 
