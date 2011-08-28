@@ -103,8 +103,8 @@ static const _CNT_TYPE_ CNT_tab[] =
      THR,    /* THR */
      NYI };  /* TID */
      
-static const _UNS_TYPE_ max = 20;
-static _UNS_TYPE_ ctr;
+static const _UNS_TYPE_ max = 5;
+static _UNS_TYPE_ eval_counter;
  
 /* private functions */
 
@@ -552,30 +552,6 @@ static _NIL_TYPE_ RPL(_NIL_TYPE_)
          _error_(_IIX_ERROR_); }
    else 
      _error_(_NAT_ERROR_); }
-     
-/*------------------------------------------------------------------------*/
-/*  SCH (scheduler)                                                       */
-/*     expr-stack: [... ... ... ... *** TID] -> [... ... ... ... ... ***] */
-/*     cont-stack: [... ... ... ... ... SCH] -> [... ... ... ... ... ***] */
-/*------------------------------------------------------------------------*/ 
-static _NIL_TYPE_ SCH(_NIL_TYPE_)
- { _EXP_TYPE_ scc, scn, thr, tid, nxt;
-   _TAG_TYPE_ tag;
-   _stk_pop_EXP_(tid);
-   _stk_zap_CNT_();
-   scc = _SCH_CURRENT_;
-   tag = _ag_get_TAG_(tid);
-   scn = (tag == _TID_TAG_ ? _sch_find_(tid) : _sch_next_());
-   nxt = _ag_get_SCH_THR_(scn);
-   thr = _ag_get_SCH_THR_(scc);
-   if(!_mem_is_same_(thr, nxt))
-     { _EXP_TYPE_ env = _ag_get_THR_ENV_(thr);
-       _env_save_(env);
-       _ag_set_THR_ENV_(thr, env);
-       env = _ag_get_THR_ENV_(nxt);
-       _env_load_(env);
-       _SCH_CURRENT_ = scn; }
-   _ESCAPE_; }
 
 /*------------------------------------------------------------------------*/
 /*  SET                                                                   */
@@ -711,6 +687,47 @@ static _NIL_TYPE_ TBL(_NIL_TYPE_)
    _stk_push_EXP_(idx);
    _stk_poke_CNT_(REF);
    _stk_push_CNT_(EXP); }
+
+/*------------------------------------------------------------------------*/
+/*  VAR                                                                   */
+/*     expr-stack: [... ... ... ... ... VAR] -> [... ... ... ... ... VAL] */
+/*     cont-stack: [... ... ... ... ... VAR] -> [... ... ... ... ... ...] */
+/*------------------------------------------------------------------------*/
+static _NIL_TYPE_ VAR(_NIL_TYPE_)
+ { _EXP_TYPE_ dct, nam, val, var;
+   _stk_peek_EXP_(var);
+   nam = _ag_get_VAR_NAM_(var);
+   _dct_locate_(nam, dct, _DCT_);
+   val = _ag_get_DCT_VAL_(dct);
+   _stk_poke_EXP_(val);
+   _stk_zap_CNT_(); }
+   
+/*------------------------------------------------------------------------*/
+/*  SCH (scheduler, switch threads)                                       */
+/*     expr-stack: [... ... ... ... *** TID] -> [... ... ... ... ... ***] */
+/*     cont-stack: [... ... ... ... ... SCH] -> [... ... ... ... ... ***] */
+/*------------------------------------------------------------------------*/ 
+static _NIL_TYPE_ SCH(_NIL_TYPE_)
+ { _EXP_TYPE_ scc, scn, thr, tid, nxt;
+   _TAG_TYPE_ tag;
+   _stk_pop_EXP_(tid);
+   _stk_zap_CNT_();
+   scc = _SCH_CURRENT_;
+   tag = _ag_get_TAG_(tid);
+   if (tag == _TID_TAG_)
+      scn = _scheduler_find_(tid);
+   else
+      scn = _scheduler_next_();
+   nxt = _ag_get_SCH_THR_(scn);
+   thr = _ag_get_SCH_THR_(scc);
+   if(!_mem_is_same_(thr, nxt))
+     { _EXP_TYPE_ env = _ag_get_THR_ENV_(thr);
+       _env_save_(env);
+       _ag_set_THR_ENV_(thr, env);
+       env = _ag_get_THR_ENV_(nxt);
+       _env_load_(env);
+       _SCH_CURRENT_ = scn; }
+   _ESCAPE_; }
    
 /*------------------------------------------------------------------------*/
 /*  THA (thread-answer)                                                   */
@@ -764,7 +781,7 @@ static _NIL_TYPE_ THa(_NIL_TYPE_)
        _BYT_TYPE_ res;
        nam = _ag_get_THA_NAM_(tha);
        arg = _ag_get_THA_ARG_(tha);
-       sch = _sch_find_(tid);
+       sch = _scheduler_find_(tid);
        thr = _ag_get_SCH_THR_(sch);
        env = _ag_get_THR_ENV_(thr);
        _CNT_TYPE_ thq_top;
@@ -775,9 +792,9 @@ static _NIL_TYPE_ THa(_NIL_TYPE_)
        if(thq_top == THq)
          { _EXP_TYPE_ cur_idf, cur_thr, thq_idf, thq_tid;
            _stk_peek_EXP_(thq_tid);
-           thq_idf = _ag_get_TID_IDF_(thq_tid);
+           thq_idf = _ag_get_TID_TID_(thq_tid);
            cur_thr = _ag_get_SCH_THR_(_SCH_CURRENT_);
-           cur_idf = _ag_get_THR_IDF_(cur_thr);
+           cur_idf = _ag_get_THR_TID_(cur_thr);
            if(_mem_is_same_(cur_idf, thq_idf))
              { _EXP_TYPE_ thq, thq_nam;
                _stk_zap_EXP_();
@@ -910,13 +927,11 @@ static _NIL_TYPE_ THq(_NIL_TYPE_)
    _stk_claim_();
    _stk_peek_EXP_(tid);
    tag = _ag_get_TAG_(tid);
-   if(tag != _TID_TAG_)
-     { // the answering happens when calling the corresponding THA
-       _stk_zap_EXP_();
+   if(tag != _TID_TAG_) // answering happens when calling the corresponding THA
+     { _stk_zap_EXP_();
        _stk_poke_CNT_(THQ); }
-   else
-     { // leave thread
-       _stk_push_EXP_(_VOID_);
+   else // leave thread
+     { _stk_push_EXP_(_VOID_);
        _stk_push_CNT_(SCH); }}
 
 /*------------------------------------------------------------------------*/
@@ -942,22 +957,8 @@ static _NIL_TYPE_ THR(_NIL_TYPE_)
    _ag_set_THR_EXP_(nth, exp);
    _ag_set_THR_ENV_(nth, env);
    tid = _ag_make_TID_();
-   _sch_add_(nth, tid);
+   _scheduler_add_(nth, tid);
    _stk_poke_EXP_(tid);
-   _stk_zap_CNT_(); }
-
-/*------------------------------------------------------------------------*/
-/*  VAR                                                                   */
-/*     expr-stack: [... ... ... ... ... VAR] -> [... ... ... ... ... VAL] */
-/*     cont-stack: [... ... ... ... ... VAR] -> [... ... ... ... ... ...] */
-/*------------------------------------------------------------------------*/
-static _NIL_TYPE_ VAR(_NIL_TYPE_)
- { _EXP_TYPE_ dct, nam, val, var;
-   _stk_peek_EXP_(var);
-   nam = _ag_get_VAR_NAM_(var);
-   _dct_locate_(nam, dct, _DCT_);
-   val = _ag_get_DCT_VAL_(dct);
-   _stk_poke_EXP_(val);
    _stk_zap_CNT_(); }
 
 /*------------------------------------------------------------------------*/
@@ -1141,23 +1142,23 @@ _NIL_TYPE_ _eval_EXP_(_NIL_TYPE_)
    _stk_claim_();
    _stk_peek_EXP_(exp);
    cnt = CNT_tab[_ag_get_TAG_(exp)];
-   if(ctr-- == 0)
+   if(eval_counter-- == 0)
      { _stk_poke_CNT_(cnt);
        _stk_push_EXP_(_VOID_);
        _stk_push_CNT_(SCH);
-       ctr = max; }
+       eval_counter = max; }
    else
      { _stk_poke_CNT_(cnt); }}
    
 /*------------------------------------------------------------------------*/
-/*  MEX                                                                   */
+/*  Main Expression (initializes everything with new input)               */
 /*     expr-stack: [... ... ... ... ... EXP] -> [... ... ... ... ... EXP] */
 /*     cont-stack: [... ... ... ... ... MEX] -> [... ... ... ... EXP SCH] */
 /*------------------------------------------------------------------------*/ 
 _NIL_TYPE_ _eval_main_EXP_(_NIL_TYPE_)
  { _EXP_TYPE_ dct, env, sch, thr, tid;
-   ctr = max;
-   _sch_initialise_();
+   eval_counter = max;
+   _scheduler_initialize_();
    _stk_poke_CNT_(EXP);
    _mem_claim_();
    thr = _ag_make_THR_();
@@ -1168,6 +1169,6 @@ _NIL_TYPE_ _eval_main_EXP_(_NIL_TYPE_)
    _ag_set_DCT_VAL_(dct, tid);
    _ag_set_DCT_DCT_(dct, _DCT_);
    _DCT_ = dct;
-   sch = _sch_add_(thr, tid);
+   sch = _scheduler_add_(thr, tid);
    _env_save_(env);
    _ag_set_THR_ENV_(thr, env); }

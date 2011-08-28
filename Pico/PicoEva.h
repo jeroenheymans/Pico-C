@@ -10,6 +10,6 @@
 /* public prototypes */
 
 _NIL_TYPE_ _eval_EXP_(_NIL_TYPE_);
-_NIL_TYPE_ _eval_main_EXP_(_NIL_TYPE_);
 _NIL_TYPE_ _eval_CAL_(_NIL_TYPE_);
+_NIL_TYPE_ _eval_main_EXP_(_NIL_TYPE_);
 

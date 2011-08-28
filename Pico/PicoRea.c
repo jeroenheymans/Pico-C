@@ -315,42 +315,6 @@ static _NIL_TYPE_ EXp(_NIL_TYPE_)
          _stk_zap_CNT_(); }}
 
 /*------------------------------------------------------------------------*/
-/*  THA                                                                   */
-/*     expr-stack: [... ... ... INV NAM ARG] -> [... ... ... ... ... THA] */
-/*     cont-stack: [... ... ... ... CNT THA] -> [... ... ... ... ... CNT] */
-/*------------------------------------------------------------------------*/
-static _NIL_TYPE_ THA(_NIL_TYPE_)
- { _EXP_TYPE_ tha, arg, nam, inv;
-   _mem_claim_();
-   tha = _ag_make_THA_();
-   _stk_pop_EXP_(arg);
-   _stk_pop_EXP_(nam);
-   _stk_peek_EXP_(inv);
-   _ag_set_THA_INV_(tha, inv);
-   _ag_set_THA_NAM_(tha, nam);
-   _ag_set_THA_ARG_(tha, arg);
-   _stk_poke_EXP_(tha);
-   _stk_zap_CNT_(); }
-
-/*------------------------------------------------------------------------*/
-/*  THQ                                                                   */
-/*     expr-stack: [... ... ... INV NAM ARG] -> [... ... ... ... ... THQ] */
-/*     cont-stack: [... ... ... ... CNT THQ] -> [... ... ... ... ... CNT] */
-/*------------------------------------------------------------------------*/
-static _NIL_TYPE_ THQ(_NIL_TYPE_)
- { _EXP_TYPE_ thq, arg, nam, inv;
-   _mem_claim_();
-   thq = _ag_make_THQ_();
-   _stk_pop_EXP_(arg);
-   _stk_pop_EXP_(nam);
-   _stk_peek_EXP_(inv);
-   _ag_set_THQ_INV_(thq, inv);
-   _ag_set_THQ_NAM_(thq, nam);
-   _ag_set_THQ_ARG_(thq, arg);
-   _stk_poke_EXP_(thq);
-   _stk_zap_CNT_(); }
-
-/*------------------------------------------------------------------------*/
 /*  EXT                                                                   */
 /*     expr-stack: [... ... ... ... ... EXP] -> [... ... ... ... ... EXP] */
 /*     cont-stack: [... ... ... ... CNT EXT] -> [... ... ... ... ... CNT] */
@@ -544,7 +508,7 @@ static _NIL_TYPE_ REF(_NIL_TYPE_)
          _stk_poke_CNT_(RPR);
          _stk_push_CNT_(EXP);
          break; 
-       case _LTH_TOKEN_: // Left thread parentheses
+       case _LTH_TOKEN_: // left thread single
          READ_TOKEN();
          _stk_poke_CNT_(THR);
          _stk_push_CNT_(RTH);
@@ -569,7 +533,7 @@ static _NIL_TYPE_ REF(_NIL_TYPE_)
          _stk_poke_CNT_(SMC);
          _stk_push_CNT_(EXP);
          break; 
-       case _LTS_TOKEN_: // Left thread braces
+       case _LTS_TOKEN_: // left thread sequence
          READ_TOKEN();
          _stk_push_EXP_(_BEGIN_);
          _stk_push_EXP_(_ONE_);
@@ -664,32 +628,6 @@ static _NIL_TYPE_ RPR(_NIL_TYPE_)
        _stk_zap_CNT_(); }
    else
      _scan_error_(_RPR_ERROR_); }
- 
-/*------------------------------------------------------------------------*/
-/*  RTP (right thread parentheses)                                        */
-/*     expr-stack: [... ... ... ... ... EXP] -> [... ... ... ... ... EXP] */
-/*     cont-stack: [... ... ... ... CNT RTP] -> [... ... ... ... ... CNT] */
-/*------------------------------------------------------------------------*/
-static _NIL_TYPE_ RTH(_NIL_TYPE_)
- { if (current_token == _RTH_TOKEN_)
-     { READ_TOKEN();
-       _stk_zap_CNT_(); }
-   else
-     _scan_error_(_RTP_ERROR_); }
-
-/*------------------------------------------------------------------------*/
-/*  THR (thread)                                                          */
-/*     expr-stack: [... ... ... ... ... EXP] -> [... ... ... ... ... THR] */
-/*     cont-stack: [... ... ... ... CNT THR] -> [... ... ... ... ... CNT] */
-/*------------------------------------------------------------------------*/
-static _NIL_TYPE_ THR(_NIL_TYPE_)
- { _EXP_TYPE_ thr, exp;
-   _mem_claim_();
-   _stk_peek_EXP_(exp);
-   thr = _ag_make_THR_();
-   _ag_set_THR_EXP_(thr, exp);
-   _stk_poke_EXP_(thr);
-   _stk_zap_CNT_(); }
    
 /*------------------------------------------------------------------------*/
 /*  SET                                                                   */
@@ -724,42 +662,6 @@ static _NIL_TYPE_ SMC(_NIL_TYPE_)
    _stk_poke_EXP_(exp);
    switch (current_token)
      { case _RBC_TOKEN_: 
-         READ_TOKEN();
-         ctr = _ag_get_NBU_(nbr);
-         _mem_claim_SIZ_(ctr);
-         tab = _ag_make_TAB_(ctr);    
-         do
-           { _stk_pop_EXP_(exp);
-             _ag_set_TAB_EXP_(tab, ctr, exp); } 
-         while (--ctr);
-         _stk_push_EXP_(tab);
-         _stk_poke_CNT_(APL);
-         break;
-       case _SMC_TOKEN_:
-         READ_TOKEN();
-         _stk_push_EXP_(_ag_succ_NBR_(nbr));
-         _stk_push_CNT_(EXP); 
-         break; 
-       default:
-         _scan_error_(_RBC_ERROR_); }}
-   
-/*------------------------------------------------------------------------*/
-/*  TSC (thread semicolon)                                                */
-/*     expr-stack: [... NAM ... EXP NBR EXP] -> [... NAM ... EXP EXP NBR] */
-/*     cont-stack: [... ... ... ... CNT SMC] -> [... ... ... CNT SMC EXP] */
-/*                                                                        */
-/*     expr-stack: [... NAM ... EXP NBR EXP] -> [... ... ... ... NAM TAB] */
-/*     cont-stack: [... ... ... ... CNT SMC] -> [... ... ... ... CNT APL] */
-/*------------------------------------------------------------------------*/
-static _NIL_TYPE_ TSC(_NIL_TYPE_)
- { _EXP_TYPE_ exp, nbr, tab;
-   _UNS_TYPE_ ctr;
-   _stk_claim_();
-   _stk_pop_EXP_(exp);
-   _stk_peek_EXP_(nbr);
-   _stk_poke_EXP_(exp);
-   switch (current_token)
-     { case _RTS_TOKEN_: 
          READ_TOKEN();
          ctr = _ag_get_NBU_(nbr);
          _mem_claim_SIZ_(ctr);
@@ -852,6 +754,104 @@ static _NIL_TYPE_ VAR(_NIL_TYPE_)
    _stk_peek_EXP_(nam);
    _ag_set_VAR_NAM_(var, nam);      
    _stk_poke_EXP_(var);
+   _stk_zap_CNT_(); }
+   
+/*------------------------------------------------------------------------*/
+/*  THA                                                                   */
+/*     expr-stack: [... ... ... INV NAM ARG] -> [... ... ... ... ... THA] */
+/*     cont-stack: [... ... ... ... CNT THA] -> [... ... ... ... ... CNT] */
+/*------------------------------------------------------------------------*/
+static _NIL_TYPE_ THA(_NIL_TYPE_)
+ { _EXP_TYPE_ tha, arg, nam, inv;
+   _mem_claim_();
+   tha = _ag_make_THA_();
+   _stk_pop_EXP_(arg);
+   _stk_pop_EXP_(nam);
+   _stk_peek_EXP_(inv);
+   _ag_set_THA_INV_(tha, inv);
+   _ag_set_THA_NAM_(tha, nam);
+   _ag_set_THA_ARG_(tha, arg);
+   _stk_poke_EXP_(tha);
+   _stk_zap_CNT_(); }
+
+/*------------------------------------------------------------------------*/
+/*  THQ                                                                   */
+/*     expr-stack: [... ... ... INV NAM ARG] -> [... ... ... ... ... THQ] */
+/*     cont-stack: [... ... ... ... CNT THQ] -> [... ... ... ... ... CNT] */
+/*------------------------------------------------------------------------*/
+static _NIL_TYPE_ THQ(_NIL_TYPE_)
+ { _EXP_TYPE_ thq, arg, nam, inv;
+   _mem_claim_();
+   thq = _ag_make_THQ_();
+   _stk_pop_EXP_(arg);
+   _stk_pop_EXP_(nam);
+   _stk_peek_EXP_(inv);
+   _ag_set_THQ_INV_(thq, inv);
+   _ag_set_THQ_NAM_(thq, nam);
+   _ag_set_THQ_ARG_(thq, arg);
+   _stk_poke_EXP_(thq);
+   _stk_zap_CNT_(); }
+   
+/*------------------------------------------------------------------------*/
+/*  TSC (thread semicolon)                                                */
+/*     expr-stack: [... NAM ... EXP NBR EXP] -> [... NAM ... EXP EXP NBR] */
+/*     cont-stack: [... ... ... ... CNT SMC] -> [... ... ... CNT SMC EXP] */
+/*                                                                        */
+/*     expr-stack: [... NAM ... EXP NBR EXP] -> [... ... ... ... NAM TAB] */
+/*     cont-stack: [... ... ... ... CNT SMC] -> [... ... ... ... CNT APL] */
+/*------------------------------------------------------------------------*/
+static _NIL_TYPE_ TSC(_NIL_TYPE_)
+ { _EXP_TYPE_ exp, nbr, tab;
+   _UNS_TYPE_ ctr;
+   _stk_claim_();
+   _stk_pop_EXP_(exp);
+   _stk_peek_EXP_(nbr);
+   _stk_poke_EXP_(exp);
+   switch (current_token)
+     { case _RTS_TOKEN_: 
+         READ_TOKEN();
+         ctr = _ag_get_NBU_(nbr);
+         _mem_claim_SIZ_(ctr);
+         tab = _ag_make_TAB_(ctr);    
+         do
+           { _stk_pop_EXP_(exp);
+             _ag_set_TAB_EXP_(tab, ctr, exp); } 
+         while (--ctr);
+         _stk_push_EXP_(tab);
+         _stk_poke_CNT_(APL);
+         break;
+       case _SMC_TOKEN_:
+         READ_TOKEN();
+         _stk_push_EXP_(_ag_succ_NBR_(nbr));
+         _stk_push_CNT_(EXP); 
+         break; 
+       default:
+         _scan_error_(_RBC_ERROR_); }}
+
+/*------------------------------------------------------------------------*/
+/*  RTH (right thread single statement)                                   */
+/*     expr-stack: [... ... ... ... ... EXP] -> [... ... ... ... ... EXP] */
+/*     cont-stack: [... ... ... ... CNT RTH] -> [... ... ... ... ... CNT] */
+/*------------------------------------------------------------------------*/
+static _NIL_TYPE_ RTH(_NIL_TYPE_)
+ { if (current_token == _RTH_TOKEN_)
+     { READ_TOKEN();
+       _stk_zap_CNT_(); }
+   else
+     _scan_error_(_RTH_ERROR_); }
+
+/*------------------------------------------------------------------------*/
+/*  THR (thread)                                                          */
+/*     expr-stack: [... ... ... ... ... EXP] -> [... ... ... ... ... THR] */
+/*     cont-stack: [... ... ... ... CNT THR] -> [... ... ... ... ... CNT] */
+/*------------------------------------------------------------------------*/
+static _NIL_TYPE_ THR(_NIL_TYPE_)
+ { _EXP_TYPE_ thr, exp;
+   _mem_claim_();
+   _stk_peek_EXP_(exp);
+   thr = _ag_make_THR_();
+   _ag_set_THR_EXP_(thr, exp);
+   _stk_poke_EXP_(thr);
    _stk_zap_CNT_(); }
 
 /*------------------------------------------------------------------------*/

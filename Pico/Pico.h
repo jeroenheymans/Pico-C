@@ -48,8 +48,8 @@
 /*   _ZDV_ERROR_  ->  zero division                                       */
 /*   _APL_ERROR_  ->  application expected                                */
 /*   _TQA_ERROR_  ->  thread request/answer expected                      */
-/*   _RTP_ERROR_  ->  right thread parentheses expected                   */
-/*   _RTB_ERROR_  ->  right thread brace expected                         */
+/*   _RTH_ERROR_  ->  right thread parentheses expected                   */
+/*   _RTS_ERROR_  ->  right thread brace expected                         */
 /*   _THR_ERROR_  ->  thread expected                                     */
 /*   _TNF_ERROR_  ->  thread not found                                    */
 /*------------------------------------------------------------------------*/
@@ -105,8 +105,8 @@ typedef enum { _DO_ESCAPE_   = -3,
                _USR_ERROR_   = 36,
                _ZDV_ERROR_   = 37,
                _TQA_ERROR_   = 38,
-               _RTP_ERROR_   = 39,
-               _RTB_ERROR_   = 40,
+               _RTH_ERROR_   = 39,
+               _RTS_ERROR_   = 40,
                _THR_ERROR_   = 41,
                _TNF_ERROR_   = 42 } _RES_TYPE_;
 

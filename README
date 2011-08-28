@@ -1,1 +1,27 @@
-This is the project called "C Pico Evaluator" for the course "Interpretation of computerprograms 2" for the 3rd bachelor on the VUB.
+Pico Interpreter in C for the course "Interpretation of computerprograms 2" for the 3rd bachelor on the VUB.
+
+Made by Jeroen Heymans
+
+To compile this project, run "make all" in a commandline. This will delete all the .o files and compile everything.
+
+This has been tested with these codes:
+--------------------------------------
+
+
+* Switching and communication between 2 threads:
+
+{ i:j:0; p1:p2:void; p1 := {: i:= i+1; p2 :!: val(i); display("p1 sends : ", i, eoln) :}; p2 := {: p1 :?: val(j); display("p2 receives : ", j, eoln) :}; while(i<3,void) }
+
+This should generate an output like:
+p2 receives : 1
+p1 sends : 1
+p2 receives : 2
+p1 sends : 2
+<void>
+
+
+* Factorial calculation of 5:
+
+{ fact(prv, next()): {: n: void; prv :?: doFac(n); nxt: next(); if(n = 0, prv :!: result(1), { r: void; nxt :!: doFac(n-1) :?: result(r); prv :!: result(r*n) }) :}; dummy(prv): {: n: void; prv :?: doFac(n); display("Not enough factorial processes available") :}; generate(siz, first): { tab[siz]: void; last: void; for(i:1, i:=i+1, not(i>siz), { j: i; tab[j] := fact(if(j =   1, first, tab[j-1]), if(j = siz,  last, tab[j+1])) }); last := dummy(tab[siz]); tab }; facs: generate(10, main); fac(n): { r: void; facs[1] :!: doFac(n) :?: result(r); r }; fac(5) }
+
+This generates output: 120

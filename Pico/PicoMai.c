@@ -237,8 +237,7 @@ _RES_TYPE_ _PICO_INIT_(const _ADR_TYPE_ adr,
    ROOT = _ag_make_TAB_(ROOT_SIZE);
    ENVIRONMENT = _ag_make_TAB_(_MAX_SES_);
    for (SES_IDX = 0 ; SES_IDX < _MAX_SES_ ; SES_IDX++)
-     { SES_TAB[SES_IDX].ses = -1; /* zero gave problems
-				     in session zero -- DVD */
+     { SES_TAB[SES_IDX].ses = -1; /* zero gave problems in session zero -- DVD */
        CTX_VOID(SES_IDX); }
    _env_setup_((_SIZ_TYPE_)(max*_NAM_FRACT_));
    GLOBAL = _nat_install_(); 

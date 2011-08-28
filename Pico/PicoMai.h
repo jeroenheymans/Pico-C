@@ -55,11 +55,11 @@
 #define THQ_INV_INDEX 2
 #define THQ_ARG_INDEX 3
 
-#define THR_IDF_INDEX 1
+#define THR_TID_INDEX 1
 #define THR_EXP_INDEX 2
 #define THR_ENV_INDEX 3
 
-#define TID_IDF_INDEX 1
+#define TID_TID_INDEX 1
 
 #define SCH_THR_INDEX 1
 #define SCH_SCH_INDEX 2
@@ -279,8 +279,8 @@
 #define _ag_get_THQ_ARG_(THQ)\
  _mem_get_exp_(CHK_AGR(THQ, _THQ_TAG_), THQ_ARG_INDEX)
 
-#define _ag_get_THR_IDF_(THR)\
- _mem_get_exp_(CHK_AGR(THR, _THR_TAG_), THR_IDF_INDEX)
+#define _ag_get_THR_TID_(THR)\
+ _mem_get_exp_(CHK_AGR(THR, _THR_TAG_), THR_TID_INDEX)
 
 #define _ag_get_THR_EXP_(THR)\
  _mem_get_exp_(CHK_AGR(THR, _THR_TAG_), THR_EXP_INDEX)
@@ -288,8 +288,8 @@
 #define _ag_get_THR_ENV_(THR)\
  _mem_get_exp_(CHK_AGR(THR, _THR_TAG_), THR_ENV_INDEX)
 
-#define _ag_get_TID_IDF_(TID)\
- _mem_get_exp_(CHK_AGR(TID, _TID_TAG_), TID_IDF_INDEX)
+#define _ag_get_TID_TID_(TID)\
+ _mem_get_exp_(CHK_AGR(TID, _TID_TAG_), TID_TID_INDEX)
 
 #define _ag_get_SCH_THR_(SCH)\
  _mem_get_exp_(CHK_AGR(SCH, _SCH_TAG_), SCH_THR_INDEX)
@@ -390,8 +390,8 @@
 #define _ag_set_THQ_ARG_(THQ, ARG)\
  _mem_set_exp_(CHK_AGR(THQ, _THQ_TAG_), THQ_ARG_INDEX, ARG)
 
-#define _ag_set_THR_IDF_(THR, IDF)\
- _mem_set_exp_(CHK_AGR(THR, _THR_TAG_), THR_IDF_INDEX, IDF)
+#define _ag_set_THR_TID_(THR, IDF)\
+ _mem_set_exp_(CHK_AGR(THR, _THR_TAG_), THR_TID_INDEX, IDF)
 
 #define _ag_set_THR_EXP_(THR, EXP)\
  _mem_set_exp_(CHK_AGR(THR, _THR_TAG_), THR_EXP_INDEX, EXP)
@@ -399,8 +399,8 @@
 #define _ag_set_THR_ENV_(THR, ENV)\
  _mem_set_exp_(CHK_AGR(THR, _THR_TAG_), THR_ENV_INDEX, ENV)
 
-#define _ag_set_TID_IDF_(TID, IDF)\
- _mem_set_exp_(CHK_AGR(TID, _TID_TAG_), TID_IDF_INDEX, IDF)
+#define _ag_set_TID_TID_(TID, IDF)\
+ _mem_set_exp_(CHK_AGR(TID, _TID_TAG_), TID_TID_INDEX, IDF)
 
 #define _ag_set_SCH_THR_(SCH, THR)\
  _mem_set_exp_(CHK_AGR(SCH, _SCH_TAG_), SCH_THR_INDEX, THR)

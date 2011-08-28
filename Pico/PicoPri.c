@@ -313,7 +313,7 @@ static _NIL_TYPE_ TID(_NIL_TYPE_)
    _UNS_TYPE_ val;
    _stk_peek_EXP_(tid);
    _stk_poke_EXP_(_EOLN_);
-   num = _ag_get_TID_IDF_(tid);
+   num = _ag_get_TID_TID_(tid);
    val = _ag_get_NBU_(num);
    sprintf(_TEXT_BUF_, "<thread %d>", val);
    _print_(_TEXT_BUF_); }
